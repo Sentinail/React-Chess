@@ -661,15 +661,20 @@ export const calculateMoveWithPiece = ( board, row, col, chessPiece ) => {
 
             let cell = board.find(cell => {return cell.col === hasOpponentCoordinate1[0] && cell.row === hasOpponentCoordinate1[1]})
 
-            if (cell.chessPiece.chessPieceName && cell.chessPiece.team !== chessPiece.team) {
-                piecesPossibleMoves.moves.add(`c${hasOpponentCoordinate1[0]}r${hasOpponentCoordinate1[1]}`)
+            if (cell) {
+                if (cell.chessPiece.chessPieceName && cell.chessPiece.team !== chessPiece.team) {
+                    piecesPossibleMoves.moves.add(`c${hasOpponentCoordinate1[0]}r${hasOpponentCoordinate1[1]}`)
+                }
             }
 
             cell = board.find(cell => {return cell.col === hasOpponentCoordinate2[0] && cell.row === hasOpponentCoordinate2[1]})
 
-            if (cell.chessPiece.chessPieceName && cell.chessPiece.team !== chessPiece.team) {
-                piecesPossibleMoves.moves.add(`c${hasOpponentCoordinate2[0]}r${hasOpponentCoordinate2[1]}`)
+            if (cell) {
+                if (cell.chessPiece.chessPieceName && cell.chessPiece.team !== chessPiece.team) {
+                    piecesPossibleMoves.moves.add(`c${hasOpponentCoordinate2[0]}r${hasOpponentCoordinate2[1]}`)
+                }
             }
+            
         } else if (chessPiece.team === "WHITE") {
 
             if (whitePawnStartingPlaces.has(coordinate)) {
@@ -686,7 +691,7 @@ export const calculateMoveWithPiece = ( board, row, col, chessPiece ) => {
 
                 let cell = board.find(cell => {return cell.col === checkCoordinateX && cell.row === checkCoordinateY})
 
-                if (!cell.chessPiece.chessPieceName || cell.chessPiece.team !== chessPiece.team) {
+                if (!cell.chessPiece.chessPieceName) {
                     piecesPossibleMoves.moves.add(`c${checkCoordinateX}r${checkCoordinateY}`)
                 } 
 
@@ -700,15 +705,19 @@ export const calculateMoveWithPiece = ( board, row, col, chessPiece ) => {
 
             let cell = board.find(cell => {return cell.col === hasOpponentCoordinate1[0] && cell.row === hasOpponentCoordinate1[1]})
 
-            if (cell.chessPiece.chessPieceName && cell.chessPiece.team !== chessPiece.team) {
-                console.log(cell.chessPiece.team, chessPiece.team, cell.chessPiece.chessPieceName)
-                piecesPossibleMoves.moves.add(`c${hasOpponentCoordinate1[0]}r${hasOpponentCoordinate1[1]}`)
+            if (cell) {
+                if (cell.chessPiece.chessPieceName && cell.chessPiece.team !== chessPiece.team) {
+                    console.log(cell.chessPiece.team, chessPiece.team, cell.chessPiece.chessPieceName)
+                    piecesPossibleMoves.moves.add(`c${hasOpponentCoordinate1[0]}r${hasOpponentCoordinate1[1]}`)
+                }
             }
 
             cell = board.find(cell => {return cell.col === hasOpponentCoordinate2[0] && cell.row === hasOpponentCoordinate2[1]})
 
-            if (cell.chessPiece.chessPieceName && cell.chessPiece.team !== chessPiece.team) {
-                piecesPossibleMoves.moves.add(`c${hasOpponentCoordinate2[0]}r${hasOpponentCoordinate2[1]}`)
+            if (cell) {
+                if (cell.chessPiece.chessPieceName && cell.chessPiece.team !== chessPiece.team) {
+                    piecesPossibleMoves.moves.add(`c${hasOpponentCoordinate2[0]}r${hasOpponentCoordinate2[1]}`)
+                }
             }
         }
     }

@@ -1,8 +1,11 @@
 import React, { useContext } from 'react'
-import { Animation, CellContainer, MoveColorLayer } from './style'
+import { Animation, CellContainer, ChessImage, MoveColorLayer } from './style'
 import { checkColor } from '../../algorithms/checkingColor' 
 import { calculateMoveWithPiece } from '../../algorithms/piecePossibleMoves'
 import { styleContext } from '../../context/styleContext'
+import moveSFX from "../../assets/SFX/move-self.mp3"
+import attackSFX from "../../assets/SFX/attack-opponent.mp3"
+import { motion, AnimatePresence } from 'framer-motion'
 
 function Cell({ id, row, col, chessPiece, boardState, setMovingPiece, movingPiece, setBoardState, isWhite, setIsWhite }) {
     const { primaryColor, secondaryColor, tertiaryColor } = useContext(styleContext)
@@ -11,9 +14,17 @@ function Cell({ id, row, col, chessPiece, boardState, setMovingPiece, movingPiec
         const playerTurn = isWhite ? "WHITE" : "BLACK"
 
         if (movingPiece && movingPiece.moves.has(`c${col}r${row}`)) {
+            let hasAttacked = false
+
             let newBoardState = boardState.map((cell, index) => {
 
+                // Replaces the piece that moved to that location
                 if (cell.row === row && cell.col === col) {
+
+                    if (cell.chessPiece.chessPieceName) {
+                        hasAttacked = true
+                    }
+
                     let newCell = cell
                     let chessPiece = movingPiece.chessPieceName
 
@@ -23,6 +34,7 @@ function Cell({ id, row, col, chessPiece, boardState, setMovingPiece, movingPiec
                     return newCell
                 } 
 
+                // Deletes the piece that moved
                 else if (cell.row === movingPiece.row && cell.col === movingPiece.col) {
                     let newCell = cell
                     newCell.row = cell.row
@@ -37,12 +49,17 @@ function Cell({ id, row, col, chessPiece, boardState, setMovingPiece, movingPiec
                 } else {
                     return cell
                 }
-
             })
             
             setBoardState(newBoardState)
             setIsWhite(!isWhite)
             setMovingPiece()
+            if (hasAttacked) {
+                new Audio(attackSFX).play()
+            } else {
+                new Audio(moveSFX).play()
+            }
+            
         } 
         
         if (chessPiece.chessPieceName) {
@@ -67,17 +84,26 @@ function Cell({ id, row, col, chessPiece, boardState, setMovingPiece, movingPiec
 
     return (
         <>
-            <CellContainer id={`c${col}r${row}`} $backgroundColor={() => {return getColor()}} onClick={handleClick}>
-                { (movingPiece && movingPiece.moves.has(`c${col}r${row}`)) && <MoveColorLayer $tertiaryColor={tertiaryColor}/> }
-                
-                <Animation>
-                    <p> { col }|{ row } </p>
-                    <p> {chessPiece.chessPieceName} </p>
-                    <p> { chessPiece.team } </p>
-                </Animation>
+            <motion.div initial={{opacity: 0, y: -100 }} animate={{opacity: 1, y: 0}}>
+                <CellContainer id={`c${col}r${row}`} $backgroundColor={() => {return getColor()}} onClick={handleClick}>
+                    { (movingPiece && movingPiece.moves.has(`c${col}r${row}`)) && <MoveColorLayer $tertiaryColor={tertiaryColor}/> }
                     
-                
-            </CellContainer>
+                    <AnimatePresence>
+                    { chessPiece.chessPieceImg ? 
+                        <motion.div initial={{opacity: 0, y: -100 }} animate={{opacity: 1, y: 0}}>
+                            <ChessImage src={chessPiece.chessPieceImg} alt='chessPiece' />
+                        </motion.div>
+                    : 
+                        <div> 
+                            {/* <p> { col }|{ row } </p>
+                            <p> {chessPiece.chessPieceName} </p>
+                            <p> { chessPiece.team } </p> */}
+                        </div> }
+
+                    </AnimatePresence>
+                    
+                </CellContainer>
+            </motion.div>
         </>
     )
 }

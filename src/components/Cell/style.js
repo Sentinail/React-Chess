@@ -43,3 +43,9 @@ export const Animation = styled.div`
         100% {opacity: 1}
     }
 `
+export const ChessImage = styled.img`
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1/1;
+    z-index: 10;
+`

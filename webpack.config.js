@@ -30,6 +30,28 @@ module.exports = {
                 test: /\.css$/i,
                 use: ["style-loader", "css-loader"]
             },
+            {
+                test: /\.(png|jpe?g|gif)$/i,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            name: 'assets/[name].[ext]',
+                        },
+                    },
+                ],
+            },
+            {
+                test: /\.(mp3)$/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            name: 'assets/[name].[ext]',
+                        },
+                    }
+                ]
+            },
         ]
     }
 }
