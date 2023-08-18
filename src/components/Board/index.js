@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { BoardContainer } from './style'
 import Cell from '../Cell'
 import chessPieceData from '../../chessPieceData'
+import { styleContext } from '../../context/styleContext'
 
 const rows = [1, 2, 3, 4, 5, 6, 7, 8]
 const cols = [1, 2, 3, 4, 5, 6, 7, 8]
@@ -26,11 +27,49 @@ const calculateGrid = () =>  {
                 cellData.chessPiece = chessPieceData.blackRook.pieceData
             } 
 
-            
             else if (chessPieceData.whiteRook.initialLocation.has(coordinates)) {
                 cellData.chessPiece = chessPieceData.whiteRook.pieceData
             } 
 
+
+            // Initializing HORSE
+            else if (chessPieceData.blackHorse.initialLocation.has(coordinates)) {
+                cellData.chessPiece = chessPieceData.blackHorse.pieceData
+            }
+
+            else if (chessPieceData.whiteHorse.initialLocation.has(coordinates)) {
+                cellData.chessPiece = chessPieceData.whiteHorse.pieceData
+            }
+
+            // Initializing BISHOPS
+            else if (chessPieceData.blackBishop.initialLocation.has(coordinates)) {
+                cellData.chessPiece = chessPieceData.blackBishop.pieceData
+            }
+
+            else if (chessPieceData.whiteBishop.initialLocation.has(coordinates)) {
+                cellData.chessPiece = chessPieceData.whiteBishop.pieceData
+            }
+
+            // Initializing QUEEN
+            else if (chessPieceData.blackQueen.initialLocation.has(coordinates)) {
+                cellData.chessPiece = chessPieceData.blackQueen.pieceData
+            }
+
+            else if (chessPieceData.whiteQueen.initialLocation.has(coordinates)) {
+                cellData.chessPiece = chessPieceData.whiteQueen.pieceData
+            }
+
+            // Initializing KING
+
+            else if (chessPieceData.blackKing.initialLocation.has(coordinates)) {
+                cellData.chessPiece = chessPieceData.blackKing.pieceData
+            }
+
+            else if (chessPieceData.whiteKing.initialLocation.has(coordinates)) {
+                cellData.chessPiece = chessPieceData.whiteKing.pieceData
+            }
+            
+            
             // Initializing PAWN
             else if (chessPieceData.blackPawn.initialLocation.has(coordinates)) {
                 cellData.chessPiece = chessPieceData.blackPawn.pieceData
@@ -60,13 +99,17 @@ function Board() {
     const [boardState, setBoardState] = useState([])
     const [movingPiece, setMovingPiece] = useState()
     const [isWhite, setIsWhite] = useState(true)
+    const { setTertiaryColor } = useContext(styleContext)
 
     useEffect(() => {
         setBoardState(calculateGrid())
 
     }, [])
 
-    console.log(boardState)
+    useEffect(() => {
+        isWhite ? setTertiaryColor("#323B54") : setTertiaryColor("#335742")
+        
+    }, [isWhite])
 
     return (
         <>
