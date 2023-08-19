@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { Animation, CellContainer, ChessImage, MoveColorLayer } from './style'
 import { checkColor } from '../../algorithms/checkingColor' 
 import { calculateMoveWithPiece } from '../../algorithms/piecePossibleMoves'
@@ -7,7 +7,7 @@ import moveSFX from "../../assets/SFX/move-self.mp3"
 import attackSFX from "../../assets/SFX/attack-opponent.mp3"
 import { motion, AnimatePresence } from 'framer-motion'
 
-function Cell({ id, row, col, chessPiece, boardState, setMovingPiece, movingPiece, setBoardState, isWhite, setIsWhite }) {
+function Cell({ id, row, col, chessPiece, boardState, setMovingPiece, movingPiece, setBoardState, isWhite, setIsWhite, dangerCellsForWhite, dangerCellsForBlack }) {
     const { primaryColor, secondaryColor, tertiaryColor } = useContext(styleContext)
 
     const handleClick = () => {
@@ -68,7 +68,7 @@ function Cell({ id, row, col, chessPiece, boardState, setMovingPiece, movingPiec
             }
 
             else if (chessPiece.team === playerTurn) {
-                const piecesPossibleMoves = calculateMoveWithPiece( boardState, row, col, chessPiece)
+                const piecesPossibleMoves = calculateMoveWithPiece( boardState, row, col, chessPiece, dangerCellsForWhite, dangerCellsForBlack)
                 piecesPossibleMoves.row = row
                 piecesPossibleMoves.col = col
                 setMovingPiece(piecesPossibleMoves)
@@ -81,14 +81,14 @@ function Cell({ id, row, col, chessPiece, boardState, setMovingPiece, movingPiec
     const getColor = () => {
         return checkColor(id + 1, row, primaryColor, secondaryColor)
     }
-
+    
     return (
         <>
             <motion.div initial={{opacity: 0, y: -100 }} animate={{opacity: 1, y: 0}}>
                 <CellContainer id={`c${col}r${row}`} $backgroundColor={() => {return getColor()}} onClick={handleClick}>
-                    { (movingPiece && movingPiece.moves.has(`c${col}r${row}`)) && <MoveColorLayer $tertiaryColor={tertiaryColor}/> }
+                    { (movingPiece && movingPiece.moves.has(`c${col}r${row}`) || dangerCellsForWhite.has(`c${col}r${row}`) ) && <MoveColorLayer $tertiaryColor={"white"}/> } 
                     
-                    <AnimatePresence>
+                    
                     { chessPiece.chessPieceImg ? 
                         <motion.div initial={{opacity: 0, y: -100 }} animate={{opacity: 1, y: 0}}>
                             <ChessImage src={chessPiece.chessPieceImg} alt='chessPiece' />
@@ -100,7 +100,7 @@ function Cell({ id, row, col, chessPiece, boardState, setMovingPiece, movingPiec
                             <p> { chessPiece.team } </p> */}
                         </div> }
 
-                    </AnimatePresence>
+                    
                     
                 </CellContainer>
             </motion.div>

@@ -3,6 +3,7 @@ import { BoardContainer } from './style'
 import Cell from '../Cell'
 import chessPieceData from '../../chessPieceData'
 import { styleContext } from '../../context/styleContext'
+import { calculateDangerKing } from '../../algorithms/piecePossibleMoves'
 
 
 import blackRook from "../../assets/Images/Black-Rook.png";
@@ -127,6 +128,10 @@ function Board() {
     const [movingPiece, setMovingPiece] = useState()
     const [isWhite, setIsWhite] = useState(true)
     const { setTertiaryColor } = useContext(styleContext)
+    const [ dangerCellsForWhite, setDangerCellsForWhite ] = useState()
+    const [ dangerCellsForBlack, setDangerCellsForBlack ] = useState()
+    const [ whiteKingIsChecked, setWhiteKingIsChecked ] = useState(false)
+    const [ blackKingIsChecked, setBlackKingIsChecked ] = useState(false)
 
     useEffect(() => {
         setBoardState(calculateGrid())
@@ -137,12 +142,50 @@ function Board() {
         
     }, [isWhite])
 
+    useEffect(() => {
+        let dangerCellsForWhiteKing = new Set([])
+        let dangerCellsForBlackKing = new Set([])
+        let checkForWhiteKing = false
+        let checkForBlackKing = false
+
+        for (let i = 0; i < boardState.length; i++) {
+            const cell = boardState[i]
+
+            if (cell.chessPiece.chessPieceName) {
+                if (cell.chessPiece.team === "WHITE") {
+                    const possibleMoves = calculateDangerKing(boardState, cell.row, cell.col, cell.chessPiece)
+                    const movesArray = Array.from(possibleMoves.moves)
+
+                    for (let j = 0; j < movesArray.length; j++) {
+                        const move = movesArray[j]
+                        dangerCellsForBlackKing.add(move)
+                    }
+                } 
+                
+                else if (cell.chessPiece.team === "BLACK") {
+                    const possibleMoves = calculateDangerKing(boardState, cell.row, cell.col, cell.chessPiece)
+                    const movesArray = Array.from(possibleMoves.moves)
+
+                    for (let j = 0; j < movesArray.length; j++) {
+                        const move = movesArray[j]
+                        dangerCellsForWhiteKing.add(move)
+                    }
+                }
+            }
+        }
+
+        setDangerCellsForWhite(dangerCellsForWhiteKing)
+        setDangerCellsForBlack(dangerCellsForBlackKing)
+    }, [boardState])
+
     return (
         <>
             <BoardContainer>
                 {boardState.map((cellData, index) => {
                 return (
                 <Cell 
+                    dangerCellsForWhite={dangerCellsForWhite}
+                    dangerCellsForBlack={dangerCellsForBlack}
                     setIsWhite={setIsWhite}
                     isWhite={isWhite}
                     setBoardState={setBoardState}
