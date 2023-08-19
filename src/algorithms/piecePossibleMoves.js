@@ -1510,8 +1510,6 @@ export const calculateMoveWithPiece = ( board, row, col, chessPiece, dangerCellF
                     break
                 }
 
-                console.log(cell)
-
                 if (!cell.chessPiece.chessPieceName || cell.chessPiece.team !== chessPiece.team) {
                     piecesPossibleMoves.moves.add(`c${checkCoordinateX}r${checkCoordinateY}`)
                     if ( cell.chessPiece.team && cell.chessPiece.team !== chessPiece.team ) {
@@ -1776,7 +1774,6 @@ export const calculateMoveWithPiece = ( board, row, col, chessPiece, dangerCellF
 
             if (cell) {
                 if (cell.chessPiece.chessPieceName && cell.chessPiece.team !== chessPiece.team) {
-                    console.log(cell.chessPiece.team, chessPiece.team, cell.chessPiece.chessPieceName)
                     piecesPossibleMoves.moves.add(`c${hasOpponentCoordinate1[0]}r${hasOpponentCoordinate1[1]}`)
                 }
             }

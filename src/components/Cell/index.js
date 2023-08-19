@@ -86,7 +86,7 @@ function Cell({ id, row, col, chessPiece, boardState, setMovingPiece, movingPiec
         <>
             <motion.div initial={{opacity: 0, y: -100 }} animate={{opacity: 1, y: 0}}>
                 <CellContainer id={`c${col}r${row}`} $backgroundColor={() => {return getColor()}} onClick={handleClick}>
-                    { (movingPiece && movingPiece.moves.has(`c${col}r${row}`) || dangerCellsForWhite.has(`c${col}r${row}`) ) && <MoveColorLayer $tertiaryColor={"white"}/> } 
+                    { (movingPiece && movingPiece.moves.has(`c${col}r${row}`) ) && <MoveColorLayer $tertiaryColor={tertiaryColor}/> } 
                     
                     
                     { chessPiece.chessPieceImg ? 

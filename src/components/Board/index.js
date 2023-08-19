@@ -3,7 +3,7 @@ import { BoardContainer } from './style'
 import Cell from '../Cell'
 import chessPieceData from '../../chessPieceData'
 import { styleContext } from '../../context/styleContext'
-import { calculateDangerKing } from '../../algorithms/piecePossibleMoves'
+import { calculateDangerKing, calculateMoveWithPiece } from '../../algorithms/piecePossibleMoves'
 
 
 import blackRook from "../../assets/Images/Black-Rook.png";
@@ -130,8 +130,6 @@ function Board() {
     const { setTertiaryColor } = useContext(styleContext)
     const [ dangerCellsForWhite, setDangerCellsForWhite ] = useState()
     const [ dangerCellsForBlack, setDangerCellsForBlack ] = useState()
-    const [ whiteKingIsChecked, setWhiteKingIsChecked ] = useState(false)
-    const [ blackKingIsChecked, setBlackKingIsChecked ] = useState(false)
 
     useEffect(() => {
         setBoardState(calculateGrid())
@@ -143,10 +141,11 @@ function Board() {
     }, [isWhite])
 
     useEffect(() => {
+        let whiteKingIsChecked = false
+        let blackKingIsChecked = false
+
         let dangerCellsForWhiteKing = new Set([])
         let dangerCellsForBlackKing = new Set([])
-        let checkForWhiteKing = false
-        let checkForBlackKing = false
 
         for (let i = 0; i < boardState.length; i++) {
             const cell = boardState[i]
@@ -169,6 +168,30 @@ function Board() {
                     for (let j = 0; j < movesArray.length; j++) {
                         const move = movesArray[j]
                         dangerCellsForWhiteKing.add(move)
+                    }
+                }
+            }
+        }
+
+        for (let i = 0; i < boardState.length; i++) {
+            const cell = boardState[i]
+
+            if (cell.chessPiece.chessPieceName === "KING") {
+                if (cell.chessPiece.team === "BLACK") {
+                    if (dangerCellsForBlackKing.has(`c${cell.col}r${cell.row}`)) {
+                        blackKingIsChecked = true
+                        if (blackKingIsChecked && calculateMoveWithPiece(boardState, cell.row, cell.col, cell.chessPiece).moves.size <= 0) {
+                            alert("WHITE WON!")
+                        }
+                    }
+                }
+
+                if (cell.chessPiece.team === "WHITE") {
+                    if (dangerCellsForWhiteKing.has(`c${cell.col}r${cell.row}`)) {
+                        whiteKingIsChecked = true
+                        if (whiteKingIsChecked && calculateMoveWithPiece(boardState, cell.row, cell.col, cell.chessPiece).moves.size <= 0) {
+                            alert("BLACK WON!")
+                        }
                     }
                 }
             }
