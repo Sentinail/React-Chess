@@ -4,6 +4,7 @@ import chessPieceData from "../chessPieceData"
 export const calculateDangerKing = ( board, row, col, chessPiece, dangerCellForWhite=new Set([]), dangerCellForBlack=new Set([])) => {
     let piecesPossibleMoves = {
         chessPieceName: chessPiece,
+        coordinates: [col, row],
         moves: new Set([])
     }
 
@@ -872,6 +873,7 @@ export const calculateMoveWithPiece = ( board, row, col, chessPiece, dangerCellF
 
     let piecesPossibleMoves = {
         chessPieceName: chessPiece,
+        coordinates: [col, row],
         moves: new Set([])
     }
 

@@ -27,7 +27,7 @@ export const MoveColorLayer = styled.div`
     width: 100%;
     height: 100%;
     background-color: ${props => {return props.$tertiaryColor}};
-    opacity: 0.5;
+    opacity: 0.7;
     z-index: 5;
     box-shadow: 0px 0px 20px 25px rgba(0,0,0,1) inset;
     position: absolute;
