@@ -191,8 +191,16 @@ function Board() {
                     // If Checked
                     if (dangerCellsForBlackKing.has(`c${cell.col}r${cell.row}`)) {
                         let history = JSON.parse(window.localStorage.getItem("history"))
+
+                        if (isWhite) {
+                            history.pop()
+                            setBoardState(history[history.length - 1])
+                            window.localStorage.setItem("history", JSON.stringify(history))
+                            setIsWhite(false)
+                        }
+
                         // If No Possible Moves
-                        if (calculateMoveWithPiece(boardState, cell.row, cell.col, cell.chessPiece, dangerCellsForWhiteKing, dangerCellsForBlackKing).moves.size <= 0) {
+                        else if (calculateMoveWithPiece(boardState, cell.row, cell.col, cell.chessPiece, dangerCellsForWhiteKing, dangerCellsForBlackKing).moves.size <= 0) {
                             let survivable = false
                             
                             for (let j = 0; j < boardState.length; j++) {
@@ -209,21 +217,21 @@ function Board() {
                             } else {
                                 setIsWinnerData({message: "Congrats For White!", winner: "WHITE"})
                             }
-
-                        } if (isWhite) {
-                            history.pop()
-                            setBoardState(history[history.length - 1])
-                            window.localStorage.setItem("history", JSON.stringify(history))
-                            setIsWhite(false)
-                        }
+                        } 
                     }
                 }
 
                 if (cell.chessPiece.team === "WHITE") {
                     if (dangerCellsForWhiteKing.has(`c${cell.col}r${cell.row}`)) {
-                        console.log("Checked")
-                        if (calculateMoveWithPiece(boardState, cell.row, cell.col, cell.chessPiece, dangerCellsForWhiteKing, dangerCellsForBlackKing).moves.size <= 0) {
-                            console.log("No Possible Moves")
+                        
+                        if (!isWhite) {
+                            history.pop()
+                            setBoardState(history[history.length - 1])
+                            window.localStorage.setItem("history", JSON.stringify(history))
+                            setIsWhite(true)
+                        }
+
+                        else if (calculateMoveWithPiece(boardState, cell.row, cell.col, cell.chessPiece, dangerCellsForWhiteKing, dangerCellsForBlackKing).moves.size <= 0) {
                             let survivable = false
                             for (let j = 0; j < boardState.length; j++) {
                                 let opponentCell = boardState[j]
@@ -237,12 +245,6 @@ function Board() {
                             } else {
                                 setIsWinnerData({message: "Congrats For Black!", winner: "BLACK"})
                             }
-                            
-                        } if (!isWhite) {
-                            history.pop()
-                            setBoardState(history[history.length - 1])
-                            window.localStorage.setItem("history", JSON.stringify(history))
-                            setIsWhite(true)
                         }
                     } 
                 }
