@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useContext, useLayoutEffect } from 'react'
-import { BoardContainer } from './style'
+import { BoardContainer, WinnerAlertBox } from './style'
 import Cell from '../Cell'
 import chessPieceData from '../../chessPieceData'
 import { styleContext } from '../../context/styleContext'
 import { calculateDangerKing, calculateMoveWithPiece } from '../../algorithms/piecePossibleMoves'
+import { motion } from 'framer-motion'
+import startBoardSFX from "../../assets/SFX/board-start.mp3"
 
 import blackRook from "../../assets/Images/Black-Rook.png";
 import blackKnight from "../../assets/Images/Black-Knight.png";
@@ -123,12 +125,13 @@ const calculateGrid = () =>  {
 }
 
 function Board() {
-    const { setTertiaryColor } = useContext(styleContext)
+    const { setTertiaryColor, primaryColor, secondaryColor, tertiaryColor } = useContext(styleContext)
     const [boardState, setBoardState] = useState([])
     const [movingPiece, setMovingPiece] = useState()
     const [isWhite, setIsWhite] = useState(true)
     const [ dangerCellsForWhite, setDangerCellsForWhite ] = useState()
     const [ dangerCellsForBlack, setDangerCellsForBlack ] = useState()
+    const [ isWinnerData, setIsWinnerData ] = useState()
 
     useLayoutEffect(() => {
         setBoardState(calculateGrid())
@@ -189,7 +192,7 @@ function Board() {
                         let history = JSON.parse(window.localStorage.getItem("history"))
 
                         if (calculateMoveWithPiece(boardState, cell.row, cell.col, cell.chessPiece).moves.size <= 0) {
-                            alert("WHITE WON!")
+                            setIsWinnerData({message: "Congrats For White!", winner: "WHITE"})
 
                         } if (isWhite) {
                             history.pop()
@@ -203,7 +206,7 @@ function Board() {
                 if (cell.chessPiece.team === "WHITE") {
                     if (dangerCellsForWhiteKing.has(`c${cell.col}r${cell.row}`)) {
                         if (calculateMoveWithPiece(boardState, cell.row, cell.col, cell.chessPiece).moves.size <= 0) {
-                            alert("BLACK WON!")
+                            setIsWinnerData({message: "Congrats For Black!", winner: "BLACK"})
                         } if (!isWhite) {
                             history.pop()
                             setBoardState(history[history.length - 1])
@@ -221,7 +224,21 @@ function Board() {
 
     return (
         <>
-            <BoardContainer>
+            { isWinnerData ? 
+            <motion.div initial={{y: -100}} animate={{y: 0}}>
+                <WinnerAlertBox $winner={isWinnerData.winner} $primaryColor={primaryColor} $secondaryColor={secondaryColor} $tertiaryColor={tertiaryColor}> 
+                    <h1> { isWinnerData.message } </h1> 
+                    <button onClick={() => { 
+                        setBoardState(calculateGrid()); 
+                        window.localStorage.setItem("history", JSON.stringify([])); 
+                        setIsWinnerData(); 
+                        new Audio(startBoardSFX).play();
+                        setIsWhite(true)
+                        }}> PLAY AGAIN ? </button>
+                </WinnerAlertBox>
+            </motion.div>
+                :
+                <BoardContainer>
                 {boardState.map((cellData, index) => {
                 return (
                 <Cell 
@@ -241,7 +258,9 @@ function Board() {
 
                 ></Cell>)
                 })}
-            </BoardContainer>
+                </BoardContainer>
+            }
+            
         </>
     )
 }

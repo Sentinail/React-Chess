@@ -34,3 +34,35 @@ export const BoardBorder = styled.div`
     border-radius: 5px;
     box-shadow: 0px 0px 20px 10px rgba(0,0,0,0.5);
 `
+
+export const WinnerAlertBox = styled.div`
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90vw;
+    height: 90vh;
+    max-width: 700px;
+    max-height: 350px;
+    border: 5px solid black;
+    border-radius: 10px;
+    background-color: ${props => {return props.$winner === "WHITE" ? props.$primaryColor : props.$secondaryColor}};
+
+    & button {
+        border: none;
+        background-color: ${props => {return props.$tertiaryColor}};
+        padding: 20px;
+        border-radius: 10px;
+        cursor: pointer;
+
+        transition: all 0.2s ease-in-out;
+
+        &:hover {
+            transform: scale(1.1)
+        }
+    }
+`
