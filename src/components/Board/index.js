@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useLayoutEffect } from 'react'
 import { BoardContainer } from './style'
 import Cell from '../Cell'
 import chessPieceData from '../../chessPieceData'
 import { styleContext } from '../../context/styleContext'
 import { calculateDangerKing, calculateMoveWithPiece } from '../../algorithms/piecePossibleMoves'
-
 
 import blackRook from "../../assets/Images/Black-Rook.png";
 import blackKnight from "../../assets/Images/Black-Knight.png";
@@ -22,7 +21,7 @@ import whitePawn from "../../assets/Images/White-Pawn.png";
 
 const rows = [1, 2, 3, 4, 5, 6, 7, 8]
 const cols = [1, 2, 3, 4, 5, 6, 7, 8]
-
+let set = new Set([])
 
 const calculateGrid = () =>  {
     const grid = []
@@ -124,29 +123,36 @@ const calculateGrid = () =>  {
 }
 
 function Board() {
+    const { setTertiaryColor } = useContext(styleContext)
     const [boardState, setBoardState] = useState([])
     const [movingPiece, setMovingPiece] = useState()
     const [isWhite, setIsWhite] = useState(true)
-    const { setTertiaryColor } = useContext(styleContext)
     const [ dangerCellsForWhite, setDangerCellsForWhite ] = useState()
     const [ dangerCellsForBlack, setDangerCellsForBlack ] = useState()
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         setBoardState(calculateGrid())
+        window.localStorage.setItem("history", JSON.stringify([]))
     }, [])
 
     useEffect(() => {
         isWhite ? setTertiaryColor("#323B54") : setTertiaryColor("#335742")
-        
     }, [isWhite])
 
     useEffect(() => {
-        let whiteKingIsChecked = false
-        let blackKingIsChecked = false
+        let currentState = [...boardState]
+        const history = JSON.parse(window.localStorage.getItem("history"))
+
+        if (currentState.length > 0) {
+            history.push(currentState)
+            window.localStorage.setItem("history", JSON.stringify(history))
+        }
+
 
         let dangerCellsForWhiteKing = new Set([])
         let dangerCellsForBlackKing = new Set([])
 
+        // Calculating The "Danger" Cells Per Move 
         for (let i = 0; i < boardState.length; i++) {
             const cell = boardState[i]
 
@@ -173,26 +179,38 @@ function Board() {
             }
         }
 
+        // Checking if there is a mate
         for (let i = 0; i < boardState.length; i++) {
             const cell = boardState[i]
-
+2
             if (cell.chessPiece.chessPieceName === "KING") {
                 if (cell.chessPiece.team === "BLACK") {
                     if (dangerCellsForBlackKing.has(`c${cell.col}r${cell.row}`)) {
-                        blackKingIsChecked = true
-                        if (blackKingIsChecked && calculateMoveWithPiece(boardState, cell.row, cell.col, cell.chessPiece).moves.size <= 0) {
+                        let history = JSON.parse(window.localStorage.getItem("history"))
+
+                        if (calculateMoveWithPiece(boardState, cell.row, cell.col, cell.chessPiece).moves.size <= 0) {
                             alert("WHITE WON!")
+
+                        } if (isWhite) {
+                            history.pop()
+                            setBoardState(history[history.length - 1])
+                            window.localStorage.setItem("history", JSON.stringify(history))
+                            setIsWhite(false)
                         }
                     }
                 }
 
                 if (cell.chessPiece.team === "WHITE") {
                     if (dangerCellsForWhiteKing.has(`c${cell.col}r${cell.row}`)) {
-                        whiteKingIsChecked = true
-                        if (whiteKingIsChecked && calculateMoveWithPiece(boardState, cell.row, cell.col, cell.chessPiece).moves.size <= 0) {
+                        if (calculateMoveWithPiece(boardState, cell.row, cell.col, cell.chessPiece).moves.size <= 0) {
                             alert("BLACK WON!")
+                        } if (!isWhite) {
+                            history.pop()
+                            setBoardState(history[history.length - 1])
+                            window.localStorage.setItem("history", JSON.stringify(history))
+                            setIsWhite(true)
                         }
-                    }
+                    } 
                 }
             }
         }
